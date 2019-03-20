@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
+import static it.tweb.java.utils.ResponseUtils.handleCrossOrigin;
+
 @WebServlet(name = "UserInfoServlet", value = "/userinfo")
 public class UserInfoServlet extends HttpServlet {
     private Gson gson = new Gson();
@@ -22,6 +24,7 @@ public class UserInfoServlet extends HttpServlet {
     }
 
     private void handleRequest (HttpServletRequest request, HttpServletResponse response) throws IOException {
+        handleCrossOrigin(response);
         HttpSession session = request.getSession(false);
         User user = null;
         if(session != null) {
