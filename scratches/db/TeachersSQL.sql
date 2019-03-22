@@ -26,3 +26,12 @@ FROM Courses
   LEFT JOIN subjects s on courses.subjectID = s.id
   RIGHT JOIN teachers t on courses.teacherID = t.id
 ;
+
+/*get teachers by subject*/
+SELECT
+       courses.id as courseID,
+       Teachers.name as teacherName,
+       Teachers.surname as teacherSurname,
+       teacherID, subjectID
+FROM Teachers, courses, subjects
+WHERE subjects.id = 1 AND courses.subjectID = subjects.id AND courses.teacherID = teachers.id
