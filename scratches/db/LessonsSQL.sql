@@ -30,3 +30,13 @@ VALUES (4, 2, "2019-03-15", 1, "booked");
 
 insert into lessons (userID, courseID, date, slot, status)
 VALUES (2, 1, "2019-03-15", 2, "booked");
+
+SELECT * FROM lessons, courses WHERE lessons.date = date("?") AND courses.teacherID = ? AND lessons.courseID = courses.id;
+
+SELECT lessons.slot
+FROM lessons,
+     courses
+WHERE lessons.date = DATE("2019-02-13")
+  AND courses.teacherID = 1
+#   AND courses.subjectID = 1
+  AND lessons.courseID = courses.id;
