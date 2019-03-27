@@ -31,6 +31,25 @@ VALUES (4, 2, "2019-03-15", 1, "booked");
 insert into lessons (userID, courseID, date, slot, status)
 VALUES (2, 1, "2019-03-15", 2, "booked");
 
+INSERT INTO Lessons (userID, courseID, date, slot, status)
+                   VALUES (1,
+                           (SELECT C.id FROM Courses AS C WHERE teacherID = 1 AND subjectID = 1),
+                           "2019-03-30", 1, 'booked'
+                          );
+
+INSERT INTO Lessons (userID, courseID, date, slot, status)
+         VALUES (
+                  ?,
+                  (SELECT C.id FROM Courses AS C WHERE teacherID = ? AND subjectID = ?),
+                  ?, ?, ?
+                );
+
+INSERT INTO Lessons (userID, courseID, date, slot, status)
+VALUES (1,
+        (SELECT C.id FROM Courses AS C WHERE teacherID = 1 AND subjectID = 1),
+        DATE("2019-03-29"), 1, 'booked'
+       );
+
 SELECT * FROM lessons, courses WHERE lessons.date = date("?") AND courses.teacherID = ? AND lessons.courseID = courses.id;
 
 SELECT lessons.slot
