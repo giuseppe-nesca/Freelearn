@@ -51,3 +51,10 @@ SET password = PASSWORD('sudo')
 WHERE email = 'giuseppenesca@email.it';
 
 DELETE FROM Users WHERE id=1;
+
+SELECT users.id as userID, teachers.id as teacherID, subjects.id as subjectID, lessons.date, lessons.slot
+FROM users, lessons, courses, teachers, subjects
+WHERE users.id = 1 AND users.id = lessons.userID AND lessons.courseID = courses.id AND teachers.id = courses.teacherID AND courses.subjectID = subjects.id;
+
+SELECT * FROM Users, lessons WHERE users.id = ? AND lessons.date = ? AND lessons.slot = ? AND users.id = lessons.userID;
+SELECT * FROM Users, lessons WHERE users.id = 1 AND lessons.date = "2019-02-12" AND lessons.slot = 2 AND users.id = lessons.userID;

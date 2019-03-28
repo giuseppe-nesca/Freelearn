@@ -3,13 +3,11 @@ package it.tweb.java.dao;
 import it.tweb.java.model.User;
 import org.jetbrains.annotations.*;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class UserDAO {
     private static final String sql_selectUserOnLogin = "SELECT * FROM Users WHERE email=? AND password=PASSWORD(?);";
+    private static final String sql_isAviable = " SELECT * FROM Users, lessons WHERE users.id = ? AND lessons.date = ? AND lessons.slot = ? AND users.id = lessons.userID; ";
 
     @NotNull
     private static User resultSetItemToUser(ResultSet resultSet) throws SQLException {
@@ -43,5 +41,26 @@ public class UserDAO {
             throw new SQLException();
         }
         return user;
+    }
+
+    public static boolean isAviable(int userID, String date, int slot) throws SQLException {
+        boolean result = true;
+        Connection connection = ManagerDAO.connect();
+        if (connection != null ) {
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(sql_isAviable);
+                preparedStatement.setInt(1, userID);
+                preparedStatement.setDate(2, Date.valueOf(date));
+                preparedStatement.setInt(3, slot);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next())
+                    result = false;
+            } catch (SQLException e) {
+                e.getMessage();
+            } finally {
+                ManagerDAO.disconnect(connection);
+            }
+        } else throw new SQLException();
+        return result;
     }
 }
