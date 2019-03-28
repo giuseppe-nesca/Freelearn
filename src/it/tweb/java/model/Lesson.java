@@ -46,6 +46,11 @@ public class Lesson {
             done = true;
         }
     }
+    public Lesson(int id, int userID, int courseID, Date date, int slot, String status, int subjectID, int teacherID) {
+        this(id, userID, courseID, date, slot, status);
+        this.subjectID = subjectID;
+        this.teacherID = teacherID;
+    }
 
     private int id;
     private int userID, courseID;
@@ -53,4 +58,6 @@ public class Lesson {
     private int slot;
     private Status status;
     private boolean done = false;
+
+    private int subjectID, teacherID;
 }

@@ -1,8 +1,14 @@
 package it.tweb.java.dao;
 
+import it.tweb.java.model.Lesson;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class LessonDAO {
     private static String sql_insertLesson =
@@ -12,6 +18,24 @@ public class LessonDAO {
             "        (SELECT C.id FROM Courses AS C WHERE teacherID = ? AND subjectID = ?)," +
             "        ?, ?, ?" +
             ");";
+
+    private static String sql_getLessonsByUserID =
+            "SELECT lessons.id as id, lessons.userID as userID, lessons.courseID as courseID, lessons.date as date, lessons.slot as slot, lessons.status as status, courses.subjectID as subjectID, courses.teacherID as teacherID " +
+            "FROM lessons, subjects, teachers, courses " +
+            "WHERE lessons.userID = ? AND lessons.courseID = courses.id AND courses.subjectID = subjects.id AND courses.teacherID = teachers.id;";
+
+    private static Lesson resultSetToLesson(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        int userID = rs.getInt("userID");
+        int courseID = rs.getInt("courseID");
+        Date date = rs.getDate("date");
+        int slot = rs.getInt("slot");
+        String status = rs.getString("status");
+        int subjectID = rs.getInt("subjectID");
+        int teacherID = rs.getInt("teacherID");
+        return new Lesson(id, userID, courseID, date, slot, status, subjectID, teacherID);
+    }
+
     public static void book(int subjectID, int teacherID, int userID, String date, int slot) throws SQLException {
         Connection connection = ManagerDAO.connect();
         if (connection != null) {
@@ -30,5 +54,25 @@ public class LessonDAO {
                 ManagerDAO.disconnect(connection);
             }
         } else throw new SQLException();
+    }
+
+    public static List<Lesson> getLessonsByUserID(int userID) throws SQLException {
+        List<Lesson> lessons = new ArrayList<>();
+        Connection connection = ManagerDAO.connect();
+        if (connection != null) {
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(sql_getLessonsByUserID);
+                preparedStatement.setInt(1, userID);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    lessons.add(resultSetToLesson(resultSet));
+                }
+            }catch(SQLException e) {
+                e.getMessage();
+            } finally {
+                ManagerDAO.disconnect(connection);
+            }
+        } else throw new SQLException();
+        return lessons;
     }
 }

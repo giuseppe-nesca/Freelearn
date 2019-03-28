@@ -59,3 +59,8 @@ WHERE lessons.date = DATE("2019-02-13")
   AND courses.teacherID = 1
 #   AND courses.subjectID = 1
   AND lessons.courseID = courses.id;
+
+
+SELECT lessons.id as id, lessons.userID as userID, lessons.courseID as courseID, lessons.date as date, lessons.slot as slot, lessons.status as status, courses.subjectID as subjectID, courses.teacherID as teacherID
+FROM lessons, subjects, teachers, courses
+WHERE lessons.userID = ? AND lessons.courseID = courses.id AND courses.subjectID = subjects.id AND courses.teacherID = teachers.id;

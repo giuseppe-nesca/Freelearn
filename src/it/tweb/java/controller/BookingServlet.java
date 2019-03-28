@@ -1,6 +1,7 @@
 package it.tweb.java.controller;
 
 import it.tweb.java.dao.LessonDAO;
+import it.tweb.java.dao.ManagerDAO;
 import it.tweb.java.dao.TeacherDAO;
 import it.tweb.java.dao.UserDAO;
 import it.tweb.java.model.User;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -31,7 +33,7 @@ public class BookingServlet extends HttpServlet {
 
     }
 
-    private void handleRequest(HttpServletRequest request, HttpServletResponse response) {
+    private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         handleCrossOrigin(response);
 
         HttpSession session = request.getSession(false);
@@ -69,13 +71,24 @@ public class BookingServlet extends HttpServlet {
             boolean[] teacherAviable = TeacherDAO.isAviable(teacherID, dateString);
             boolean userAviable = UserDAO.isAviable(user.getId(), dateString, slot);
             if (!(userAviable && teacherAviable[slot -1])) {
-                //TODO return false
+                PrintWriter pw = response.getWriter();
+                response.setStatus(403);
+                if (!teacherAviable[slot -1])
+                    pw.write("Teacher busy in that date/slot");
+                if (!userAviable)
+                    pw.write("You have another lesson booked in that date/slot");
             } else {
                 LessonDAO.book(subjectID, teacherID, user.getId(), dateString, slot);
-                //TODO return true
+                response.getWriter().write("Successfuly booked");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        ManagerDAO.registerDriver();
     }
 }
