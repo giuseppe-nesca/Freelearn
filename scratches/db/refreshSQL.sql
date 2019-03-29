@@ -99,3 +99,6 @@ INSERT INTO Lessons (userID, courseID, date, slot, status)
 VALUES (3, 1, "2019-02-12", 2, "booked");
 INSERT INTO Lessons (userID, courseID, date, slot, status)
 VALUES (1, 1, "2019-02-13", 1, "booked");
+
+
+DELETE FROM Lessons WHERE Lessons.id = ?
