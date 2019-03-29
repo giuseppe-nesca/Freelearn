@@ -20,7 +20,7 @@ public class LessonDAO {
             ");";
 
     private static String sql_getLessonsByUserID =
-            "SELECT lessons.id as id, lessons.userID as userID, lessons.courseID as courseID, lessons.date as date, lessons.slot as slot, lessons.status as status, courses.subjectID as subjectID, courses.teacherID as teacherID " +
+            "SELECT lessons.id as id, lessons.userID as userID, lessons.courseID as courseID, lessons.date as date, lessons.slot as slot, lessons.status as status, courses.subjectID as subjectID, courses.teacherID as teacherID, subjects.name as subjectName, teachers.surname as teacherSurname, teachers.name as teacherName " +
             "FROM lessons, subjects, teachers, courses " +
             "WHERE lessons.userID = ? AND lessons.courseID = courses.id AND courses.subjectID = subjects.id AND courses.teacherID = teachers.id;";
 
@@ -33,7 +33,10 @@ public class LessonDAO {
         String status = rs.getString("status");
         int subjectID = rs.getInt("subjectID");
         int teacherID = rs.getInt("teacherID");
-        return new Lesson(id, userID, courseID, date, slot, status, subjectID, teacherID);
+        String subjectName = rs.getString("subjectName");
+        String teacherSurname = rs.getString("teacherSurname");
+        String teacherName = rs.getString("teacherName");
+        return new Lesson(id, userID, courseID, date, slot, status, subjectID, teacherID, subjectName, teacherSurname + " " + teacherName);
     }
 
     public static void book(int subjectID, int teacherID, int userID, String date, int slot) throws SQLException {

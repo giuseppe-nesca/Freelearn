@@ -51,6 +51,11 @@ public class Lesson {
         this.subjectID = subjectID;
         this.teacherID = teacherID;
     }
+    public Lesson(int id, int userID, int courseID, Date date, int slot, String status, int subjectID, int teacherID, String subjectString, String teacherString) {
+        this(id, userID, courseID, date, slot, status, subjectID, teacherID);
+        this.subjectString = subjectString;
+        this.teacherString = teacherString;
+    }
 
     private int id;
     private int userID, courseID;
@@ -60,4 +65,5 @@ public class Lesson {
     private boolean done = false;
 
     private int subjectID, teacherID;
+    private String subjectString, teacherString;
 }
