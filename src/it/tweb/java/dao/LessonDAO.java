@@ -24,7 +24,7 @@ public class LessonDAO {
             "FROM lessons, subjects, teachers, courses " +
             "WHERE lessons.userID = ? AND lessons.courseID = courses.id AND courses.subjectID = subjects.id AND courses.teacherID = teachers.id;";
 
-    private static String sql_deleteLesson = "DELETE FROM lessons WHERE lessons.id = ?";
+    private static String sql_deleteLesson = "UPDATE lessons SET status = 'cancelled' WHERE lessons.id = ?";
 
     private static Lesson resultSetToLesson(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
