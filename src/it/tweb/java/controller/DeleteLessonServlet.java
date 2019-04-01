@@ -30,16 +30,22 @@ public class DeleteLessonServlet extends HttpServlet {
         int lessonID = Integer.parseInt(lesson);
 
         HttpSession session = request.getSession(false);
-        if (session != null){
-            User user = (User) session.getAttribute("user");
-            if (user != null){
-                try {
-                    LessonDAO.delete(lessonID);
-                } catch (SQLException e) {
-                    e.getMessage();
+        User user = null;
+        if (session != null)
+            user = (User) session.getAttribute("user");
+        if (session != null && user != null) {
+            try {
+                boolean success = LessonDAO.delete(lessonID);
+                if (!success){
+                    response.setStatus(400);
+                    response.getWriter().write("Lesson doesn't exist");
                 }
+            } catch (SQLException e) {
+                e.getMessage();
             }
+        } else {
+            response.setStatus(401);
+
         }
-        response.setStatus(401);
     }
 }

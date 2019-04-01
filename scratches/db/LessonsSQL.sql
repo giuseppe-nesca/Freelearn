@@ -31,6 +31,12 @@ VALUES (4, 2, "2019-03-15", 1, "booked");
 insert into lessons (userID, courseID, date, slot, status)
 VALUES (2, 1, "2019-03-15", 2, "booked");
 
+insert into lessons (userID, courseID, date, slot, status) VALUES (1, 1, "2019-03-16", 1, "booked")
+insert into lessons (userID, courseID, date, slot, status) VALUES (1, 1, "2019-03-17", 1, "booked")
+insert into lessons (userID, courseID, date, slot, status) VALUES (1, 1, "2019-03-20", 1, "booked")
+insert into lessons (userID, courseID, date, slot, status) VALUES (1, 1, "2019-03-23", 1, "booked")
+
+
 INSERT INTO Lessons (userID, courseID, date, slot, status)
                    VALUES (1,
                            (SELECT C.id FROM Courses AS C WHERE teacherID = 1 AND subjectID = 1),
