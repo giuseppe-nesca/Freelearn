@@ -24,6 +24,8 @@ public class LessonDAO {
             "FROM lessons, subjects, teachers, courses " +
             "WHERE lessons.userID = ? AND lessons.courseID = courses.id AND courses.subjectID = subjects.id AND courses.teacherID = teachers.id;";
 
+    private static String sql_deleteLesson = "DELETE FROM lessons WHERE lessons.id = ?";
+
     private static Lesson resultSetToLesson(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         int userID = rs.getInt("userID");
@@ -83,5 +85,25 @@ public class LessonDAO {
             }
         } else throw new SQLException();
         return lessons;
+    }
+
+    public static boolean delete(int lessonID) throws SQLException {
+        Connection connection = ManagerDAO.connect();
+        boolean success = true;
+        if (connection != null){
+            try{
+                PreparedStatement preparedStatement = connection.prepareStatement(sql_deleteLesson);
+                preparedStatement.setInt(1, lessonID);
+                int resultSet = preparedStatement.executeUpdate();
+                if (resultSet == 0){
+                    success = false;
+                }
+            } catch (SQLException e) {
+                e.getMessage();
+            } finally {
+                ManagerDAO.disconnect(connection);
+            }
+        } else throw new SQLException();
+        return success;
     }
 }
