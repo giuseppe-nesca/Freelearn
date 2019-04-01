@@ -35,6 +35,12 @@ public class Lesson {
         return done;
     }
 
+    public boolean isCancelled(){
+        return status == Status.cancelled;
+    }
+
+
+
     public Lesson(int id, int userID, int courseID, Date date, int slot, String status) {
         this.id = id;
         this.userID = userID;

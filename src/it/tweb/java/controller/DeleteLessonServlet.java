@@ -1,6 +1,7 @@
 package it.tweb.java.controller;
 
 import it.tweb.java.dao.LessonDAO;
+import it.tweb.java.model.Lesson;
 import it.tweb.java.model.User;
 
 import javax.servlet.ServletException;
@@ -34,6 +35,17 @@ public class DeleteLessonServlet extends HttpServlet {
         if (session != null)
             user = (User) session.getAttribute("user");
         if (session != null && user != null) {
+            try{
+                Lesson l = LessonDAO.getLessonsByLessonID(lessonID);
+                if (l.isCancelled() || l.isDone()){
+                    response.setStatus(400);
+                    return;
+                }
+            } catch (SQLException e) {
+                response.setStatus(500);
+                return;
+            }
+
             try {
                 boolean success = LessonDAO.delete(lessonID);
                 if (!success){
