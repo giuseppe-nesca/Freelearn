@@ -35,6 +35,7 @@ public class BookingServlet extends HttpServlet {
 
     private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         handleCrossOrigin(response);
+        PrintWriter pw = response.getWriter();
 
         HttpSession session = request.getSession(false);
         if (session == null ){
@@ -71,14 +72,18 @@ public class BookingServlet extends HttpServlet {
             boolean[] teacherAviable = TeacherDAO.isAviable(teacherID, dateString);
             boolean userAviable = UserDAO.isAviable(user.getId(), dateString, slot);
             if (!(userAviable && teacherAviable[slot -1])) {
-                PrintWriter pw = response.getWriter();
                 response.setStatus(403);
                 if (!teacherAviable[slot -1])
                     pw.write("Teacher busy in that date/slot");
                 if (!userAviable)
-                    pw.write("You have another lesson booked in that date/slot");
+                    pw.write("You may have another lesson booked in that date/slot");
             } else {
-                LessonDAO.book(subjectID, teacherID, user.getId(), dateString, slot);
+                boolean result = LessonDAO.book(subjectID, teacherID, user.getId(), dateString, slot);
+                if (!result) {
+                    response.setStatus(400);
+                    pw.write("You may have another lesson booked in that date/slot");
+                    return;
+                }
                 response.getWriter().write("Successfuly booked");
             }
         } catch (SQLException e) {

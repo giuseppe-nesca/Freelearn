@@ -37,6 +37,10 @@ VALUES ("1", "2");
 SELECT * FROM Subjects;
 SELECT * FROM Courses;
 
+select *
+from courses as c, teachers as t, Subjects as s
+where c.teacherID = t.id AND c.subjectID = s.id and s.name="Algoritmi";
+
 
 
 
