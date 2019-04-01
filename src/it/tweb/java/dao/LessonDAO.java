@@ -39,8 +39,9 @@ public class LessonDAO {
         return new Lesson(id, userID, courseID, date, slot, status, subjectID, teacherID, subjectName, teacherSurname + " " + teacherName);
     }
 
-    public static void book(int subjectID, int teacherID, int userID, String date, int slot) throws SQLException {
+    public static boolean book(int subjectID, int teacherID, int userID, String date, int slot) throws SQLException {
         Connection connection = ManagerDAO.connect();
+        boolean result = true;
         if (connection != null) {
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(sql_insertLesson);
@@ -51,12 +52,17 @@ public class LessonDAO {
                 preparedStatement.setInt(5, slot);
                 preparedStatement.setString(6, "booked");
                 int rows = preparedStatement.executeUpdate();
+                if (rows == 0) {
+                    result = false;
+                }
             } catch(SQLException e) {
-                e.getMessage();
+                String error = e.getMessage();
+                System.err.println(error);
             } finally {
                 ManagerDAO.disconnect(connection);
             }
         } else throw new SQLException();
+        return result;
     }
 
     public static List<Lesson> getLessonsByUserID(int userID) throws SQLException {
