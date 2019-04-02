@@ -58,3 +58,5 @@ WHERE users.id = 1 AND users.id = lessons.userID AND lessons.courseID = courses.
 
 SELECT * FROM Users, lessons WHERE users.id = ? AND lessons.date = ? AND lessons.slot = ? AND users.id = lessons.userID;
 SELECT * FROM Users, lessons WHERE users.id = 1 AND lessons.date = "2019-02-12" AND lessons.slot = 2 AND users.id = lessons.userID;
+
+SELECT id, name, surname FROM users;

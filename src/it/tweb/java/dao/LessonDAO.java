@@ -31,6 +31,11 @@ public class LessonDAO {
             "FROM lessons, subjects, teachers, courses\n" +
             "WHERE lessons.id = ? AND lessons.courseID = courses.id AND courses.teacherID = teachers.id AND courses.subjectID = subjects.id;";
 
+    private static String sql_getLessonsAll =
+            "SELECT lessons.id as id, lessons.userID as userID, lessons.courseID as courseID, lessons.date as date, lessons.slot as slot, lessons.status as status, courses.subjectID as subjectID, courses.teacherID as teacherID, subjects.name as subjectName, teachers.surname as teacherSurname, teachers.name as teacherName " +
+            "FROM lessons, subjects, teachers, courses " +
+            "WHERE lessons.courseID = courses.id AND courses.subjectID = subjects.id AND courses.teacherID = teachers.id;";
+
     private static Lesson resultSetToLesson(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         int userID = rs.getInt("userID");
@@ -130,5 +135,24 @@ public class LessonDAO {
             }
         } else throw new SQLException();
         return lesson;
+    }
+
+    public static List<Lesson> getLessonsAll() throws SQLException {
+        List<Lesson> lessons = new ArrayList<>();
+        Connection connection = ManagerDAO.connect();
+        if (connection != null){
+            try{
+                PreparedStatement preparedStatement = connection.prepareStatement(sql_getLessonsAll);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()){
+                    lessons.add(resultSetToLesson(resultSet));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                ManagerDAO.disconnect(connection);
+            }
+        } else throw new SQLException();
+        return lessons;
     }
 }

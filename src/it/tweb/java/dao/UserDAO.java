@@ -4,10 +4,13 @@ import it.tweb.java.model.User;
 import org.jetbrains.annotations.*;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserDAO {
     private static final String sql_selectUserOnLogin = "SELECT * FROM Users WHERE email=? AND password=PASSWORD(?);";
     private static final String sql_isAviable = " SELECT * FROM Users, lessons WHERE users.id = ? AND lessons.date = ? AND lessons.slot = ? AND users.id = lessons.userID; ";
+    private static final String sql_getUsersAll = "SELECT id, name, surname FROM users;";
 
     @NotNull
     private static User resultSetItemToUser(ResultSet resultSet) throws SQLException {
@@ -17,6 +20,13 @@ public class UserDAO {
         String email = resultSet.getString("email");
         String role = resultSet.getString("role");
         return new User(id, name, surname, email, role);
+    }
+
+    private static User resultSetInfoToUser(ResultSet resultSet) throws SQLException {
+        int id = resultSet.getInt("id");
+        String name = resultSet.getString("name");
+        String surname = resultSet.getString("surname");
+        return new User(id, name, surname);
     }
 
     @Nullable
@@ -62,5 +72,24 @@ public class UserDAO {
             }
         } else throw new SQLException();
         return result;
+    }
+
+    public static List<User> getUsersAll() throws SQLException {
+        List<User> users = new ArrayList<>();
+        Connection connection = ManagerDAO.connect();
+        if (connection != null){
+            try{
+                PreparedStatement preparedStatement = connection.prepareStatement(sql_getUsersAll);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()){
+                    users.add(resultSetInfoToUser(resultSet));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                ManagerDAO.disconnect(connection);
+            }
+        } else throw new SQLException();
+        return users;
     }
 }
