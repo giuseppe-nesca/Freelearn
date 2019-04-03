@@ -11,12 +11,12 @@ public class TeacherDAO {
         if (connection != null) {
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(sql_isAviable);
-                preparedStatement.setDate(1, Date.valueOf(date));
+                preparedStatement.setString(1, date);
                 preparedStatement.setInt(2, teacherID);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 while(resultSet.next()) {
                     int slot = resultSet.getInt("slot");
-                    aviable[slot] = false;
+                    aviable[slot-1] = false;
                 }
             } catch (SQLException e) {
                 e.getMessage();

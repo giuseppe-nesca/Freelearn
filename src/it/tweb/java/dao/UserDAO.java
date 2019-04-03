@@ -60,7 +60,7 @@ public class UserDAO {
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(sql_isAviable);
                 preparedStatement.setInt(1, userID);
-                preparedStatement.setDate(2, Date.valueOf(date));
+                preparedStatement.setString(2, date);
                 preparedStatement.setInt(3, slot);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 while (resultSet.next())
