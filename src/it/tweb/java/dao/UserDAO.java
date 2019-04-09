@@ -3,6 +3,7 @@ package it.tweb.java.dao;
 import it.tweb.java.model.User;
 import org.jetbrains.annotations.*;
 
+import javax.servlet.ServletException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

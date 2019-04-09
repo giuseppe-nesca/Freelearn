@@ -20,6 +20,8 @@ public class SubjectDAO {
                     " teacherID, subjectID " +
                     " FROM Teachers, courses, subjects " +
                     " WHERE subjects.id = ? AND courses.subjectID = subjects.id AND courses.teacherID = teachers.id";
+    private static final String sql_checkSubject = "SELECT isActive FROM subjects WHERE name = ?;";
+    private static final String sql_insertSubject = "INSERT INTO subjects (name) VALUE (?);";
 
     static public List<Subject> getLessons() throws SQLException {
         List<Subject> subjects = new ArrayList<>();
@@ -65,5 +67,49 @@ public class SubjectDAO {
             }
         } else throw new SQLException();
         return teachers;
+    }
+
+    static public boolean checkSubject(String name) throws SQLException {
+        boolean isActive = true;
+        Connection connection = ManagerDAO.connect();
+        if (connection != null){
+            try{
+                PreparedStatement preparedStatement = connection.prepareStatement(sql_checkSubject);
+                preparedStatement.setString(1, name);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()){
+                    isActive = resultSet.getBoolean("isActive");
+                } else {
+                    isActive = false;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                ManagerDAO.disconnect(connection);
+            }
+        } else {
+            throw new SQLException();
+        }
+        return isActive;
+    }
+
+    static public boolean insertSubject(String name){
+        boolean result = true;
+        Connection connection = ManagerDAO.connect();
+        if (connection != null){
+            try{
+                PreparedStatement preparedStatement = connection.prepareStatement(sql_insertSubject);
+                preparedStatement.setString(1, name);
+                int rows = preparedStatement.executeUpdate();
+                if (rows == 0) {
+                    result = false;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                ManagerDAO.disconnect(connection);
+            }
+        }
+        return result;
     }
 }

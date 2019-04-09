@@ -57,10 +57,7 @@ public class BookingServlet extends HttpServlet {
             slot = Integer.parseInt(slotParam);
             if (dateString == null) throw new NullPointerException();
             date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
-        } catch( NumberFormatException e) {
-            response.setStatus(400);
-            return;
-        } catch (NullPointerException e) {
+        } catch( NumberFormatException | NullPointerException e) {
             response.setStatus(400);
             return;
         } catch (ParseException e) {

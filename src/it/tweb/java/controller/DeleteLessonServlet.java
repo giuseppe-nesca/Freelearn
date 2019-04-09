@@ -39,6 +39,7 @@ public class DeleteLessonServlet extends HttpServlet {
                 Lesson l = LessonDAO.getLessonsByLessonID(lessonID);
                 if (l.isCancelled() || l.isDone()){
                     response.setStatus(400);
+                    response.getWriter().write("Lesson is in the past or it's already deleted");
                     return;
                 }
             } catch (SQLException e) {

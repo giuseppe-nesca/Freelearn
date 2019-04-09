@@ -34,4 +34,10 @@ SELECT
        Teachers.surname as teacherSurname,
        teacherID, subjectID
 FROM Teachers, courses, subjects
-WHERE subjects.id = 1 AND courses.subjectID = subjects.id AND courses.teacherID = teachers.id
+WHERE subjects.id = 1 AND courses.subjectID = subjects.id AND courses.teacherID = teachers.id;
+
+SELECT * FROM lessons WHERE lessons.date = ?;
+
+SELECT * FROM lessons, courses WHERE lessons.date = ? AND courses.teacherID = ? AND lessons.courseID = courses.id;
+
+SELECT lessons.slot FROM lessons, courses WHERE lessons.date = ? AND courses.teacherID = ? AND lessons.courseID = courses.id;
