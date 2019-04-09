@@ -33,7 +33,9 @@ public class SubjectDAO {
                 while (resultSet.next()){
                     int id = resultSet.getInt("id");
                     String name = resultSet.getString("name");
-                    subjects.add(new Subject(id, name));
+                    boolean isActive = resultSet.getBoolean("isActive");
+                    if (isActive)
+                        subjects.add(new Subject(id, name));
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
