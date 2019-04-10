@@ -72,17 +72,17 @@ public class SubjectDAO {
     }
 
     static public boolean checkSubject(String name) throws SQLException {
-        boolean isActive = true;
+        boolean isActive = false;
         Connection connection = ManagerDAO.connect();
         if (connection != null){
             try{
                 PreparedStatement preparedStatement = connection.prepareStatement(sql_checkSubject);
                 preparedStatement.setString(1, name);
                 ResultSet resultSet = preparedStatement.executeQuery();
-                if (resultSet.next()){
-                    isActive = resultSet.getBoolean("isActive");
-                } else {
-                    isActive = false;
+                while (resultSet.next()){
+                    if (!isActive){
+                        isActive = resultSet.getBoolean("isActive");
+                    }
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

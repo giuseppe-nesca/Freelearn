@@ -41,3 +41,7 @@ SELECT * FROM lessons WHERE lessons.date = ?;
 SELECT * FROM lessons, courses WHERE lessons.date = ? AND courses.teacherID = ? AND lessons.courseID = courses.id;
 
 SELECT lessons.slot FROM lessons, courses WHERE lessons.date = ? AND courses.teacherID = ? AND lessons.courseID = courses.id;
+
+SELECT isActive FROM teachers WHERE surname = ?;
+
+INSERT INTO teachers (surname, name) VALUE (?, ?);
