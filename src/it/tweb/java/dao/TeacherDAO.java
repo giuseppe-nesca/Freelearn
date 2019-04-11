@@ -1,11 +1,16 @@
 package it.tweb.java.dao;
 
+import it.tweb.java.model.Teacher;
+
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TeacherDAO {
     private final static String sql_isAviable = "SELECT lessons.slot FROM lessons, courses WHERE lessons.date = ? AND courses.teacherID = ? AND lessons.courseID = courses.id;";
     private final static String sql_checkTeacher = "SELECT isActive FROM teachers WHERE surname = ? AND name = ?;";
     private final static String sql_insertTeacher = "INSERT INTO teachers (surname, name) VALUE (?, ?);";
+    private final static String sql_getAllTeachers = "SELECT * FROM teachers WHERE isActive = true;";
 
 
     public static boolean[] isAviable(int teacherID, String date) throws SQLException {
@@ -57,7 +62,7 @@ public class TeacherDAO {
         return isActive;
     }
 
-    static public boolean insertTeacher(String surname, String name){
+    static public boolean insertTeacher(String surname, String name) throws SQLException {
         boolean result = true;
         Connection connection = ManagerDAO.connect();
         if (connection != null){
@@ -74,7 +79,32 @@ public class TeacherDAO {
             } finally {
                 ManagerDAO.disconnect(connection);
             }
-        }
+        } else throw new SQLException();
         return result;
+    }
+
+    static public List<Teacher> getAllTeachers() throws SQLException {
+        List<Teacher> teachers = new ArrayList<>();
+        Connection connection = ManagerDAO.connect();
+        if (connection != null){
+            try{
+                PreparedStatement preparedStatement = connection.prepareStatement(sql_getAllTeachers);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()){
+                    int id = resultSet.getInt("id");
+                    String name = resultSet.getString("name");
+                    String surname = resultSet.getString("surname");
+                    Boolean isActive = resultSet.getBoolean("isActive");
+                    if (isActive){
+                        teachers.add(new Teacher(id, name, surname));
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally{
+                ManagerDAO.disconnect(connection);
+            }
+        } else throw new SQLException();
+        return teachers;
     }
 }

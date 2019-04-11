@@ -1,8 +1,6 @@
 package it.tweb.java.controller;
 
-import it.tweb.java.dao.ManagerDAO;
 import it.tweb.java.dao.SubjectDAO;
-import it.tweb.java.model.Subject;
 import it.tweb.java.model.User;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,8 +15,8 @@ import java.sql.SQLException;
 
 import static it.tweb.java.utils.ResponseUtils.handleCrossOrigin;
 
-@WebServlet(name = "AdminInsertSubjectsServlet", value = "/admin/subject/insert")
-public class AdminInsertSubjectsServlet extends HttpServlet {
+@WebServlet(name = "AdminDeleteSubjectsServlet", value="/admin/subject/delete")
+public class AdminDeleteSubjectsServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         handleRequest(request, response);
     }
@@ -27,44 +25,42 @@ public class AdminInsertSubjectsServlet extends HttpServlet {
         handleRequest(request, response);
     }
 
-    private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         handleCrossOrigin(response);
 
         HttpSession session = request.getSession(false);
-        if (session != null){
+        if(session != null){
             User user = (User) session.getAttribute("user");
-            if (user != null && user.getRole().equals("admin")){
-                try{
-                    @Nullable String subject = request.getParameter("subjectName");
-                    boolean isActive = SubjectDAO.checkSubject(subject);
-                    if (!isActive){
-                        boolean result = SubjectDAO.insertSubject(subject);
+            if(user != null && user.getRole().equals("admin")) {
+                boolean exist; boolean result;
+                try {
+                    @Nullable int subjectID = Integer.parseInt(request.getParameter("subjectID"));
+                    exist = SubjectDAO.checkSubjectByID(subjectID);
+                    if (exist) {
+                        result = SubjectDAO.deleteSubject(subjectID);
                         if (result){
-                            response.setStatus(200);
-                            response.getWriter().write("Subject added");
+                            response.getWriter().write("Subject correctly deleted!");
+                            return;
                         } else {
+                            response.getWriter().write("Error! Subject has not been deleted!");
                             response.setStatus(400);
-                            response.getWriter().write("Errore mentre inserivo la materia");
+                            return;
                         }
                     } else {
+                        response.getWriter().write("Error! Subject doesn't exist!");
                         response.setStatus(400);
-                        response.getWriter().write("Subject already exists");
+                        return;
                     }
-                    return;
                 } catch (SQLException e) {
                     response.setStatus(503);
                     return;
-                } catch (NullPointerException e){
+                } catch (NumberFormatException e) {
                     response.setStatus(500);
+                    response.getWriter().write("Submit a valid input!");
+                    return;
                 }
             }
         }
         response.setStatus(401);
-    }
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        ManagerDAO.registerDriver();
     }
 }

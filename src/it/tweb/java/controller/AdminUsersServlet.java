@@ -42,7 +42,7 @@ public class AdminUsersServlet extends HttpServlet {
                         response.getWriter().write(gson.toJson(users));
                         return;
                     }
-                } catch (SQLException e) {
+                } catch (SQLException e) { 
                     e.getMessage();
                     response.setStatus(503);
                     return;

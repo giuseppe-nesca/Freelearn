@@ -45,3 +45,5 @@ SELECT lessons.slot FROM lessons, courses WHERE lessons.date = ? AND courses.tea
 SELECT isActive FROM teachers WHERE surname = ?;
 
 INSERT INTO teachers (surname, name) VALUE (?, ?);
+
+SELECT * FROM teachers WHERE isActive = true;

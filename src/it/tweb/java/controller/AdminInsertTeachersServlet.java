@@ -32,9 +32,9 @@ public class AdminInsertTeachersServlet extends HttpServlet {
         if (session != null){
             User user = (User) session.getAttribute("user");
             if (user != null && user.getRole().equals("admin")){
-                @Nullable String teacherSurname = request.getParameter("teacherSurname");
-                @Nullable String teacherName = request.getParameter("teacherName");
                 try{
+                    @Nullable String teacherSurname = request.getParameter("teacherSurname");
+                    @Nullable String teacherName = request.getParameter("teacherName");
                     boolean isActive = TeacherDAO.checkTeacher(teacherSurname, teacherName);
                     if (!isActive){
                         boolean result = TeacherDAO.insertTeacher(teacherSurname, teacherName);
@@ -52,7 +52,9 @@ public class AdminInsertTeachersServlet extends HttpServlet {
                     return;
                 } catch (SQLException e) {
                     response.setStatus(400);
-                    e.printStackTrace();
+                    return;
+                } catch (NullPointerException e){
+                    response.setStatus(500);
                 }
             }
         }

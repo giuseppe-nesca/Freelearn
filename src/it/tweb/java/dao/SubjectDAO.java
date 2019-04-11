@@ -3,6 +3,7 @@ package it.tweb.java.dao;
 import it.tweb.java.model.Subject;
 import it.tweb.java.model.Teacher;
 
+import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,7 +22,10 @@ public class SubjectDAO {
                     " FROM Teachers, courses, subjects " +
                     " WHERE subjects.id = ? AND courses.subjectID = subjects.id AND courses.teacherID = teachers.id";
     private static final String sql_checkSubject = "SELECT isActive FROM subjects WHERE name = ?;";
+    private static final String sql_checkSubjectByID = "SELECT isActive FROM subjects WHERE id = ?;";
     private static final String sql_insertSubject = "INSERT INTO subjects (name) VALUE (?);";
+    private static final String sql_checkSubjectOnCourses = "SELECT courses.id FROM courses WHERE courses.subjectID = ?;";
+    private static final String sql_deleteSubject = "UPDATE subjects SET isActive = '0' WHERE id = ?;";
 
     static public List<Subject> getLessons() throws SQLException {
         List<Subject> subjects = new ArrayList<>();
@@ -95,7 +99,28 @@ public class SubjectDAO {
         return isActive;
     }
 
-    static public boolean insertSubject(String name){
+    public static boolean checkSubjectByID(int subjectID) throws SQLException {
+        boolean isActive = true;
+        Connection connection = ManagerDAO.connect();
+        if (connection != null){
+            try{
+                PreparedStatement preparedStatement = connection.prepareStatement(sql_checkSubjectByID);
+                preparedStatement.setInt(1, subjectID);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while(resultSet.next()){
+                    if(isActive){
+                        isActive = resultSet.getBoolean("isActive");
+                        return isActive;
+                    }
+                }
+            } finally {
+                ManagerDAO.disconnect(connection);
+            }
+        } else throw new SQLException();
+        return false;
+    }
+
+    static public boolean insertSubject(String name) throws SQLException {
         boolean result = true;
         Connection connection = ManagerDAO.connect();
         if (connection != null){
@@ -111,7 +136,36 @@ public class SubjectDAO {
             } finally {
                 ManagerDAO.disconnect(connection);
             }
+        } else {
+            throw new SQLException();
         }
         return result;
+    }
+
+    static public boolean deleteSubject(int id) throws SQLException {
+        boolean deleted = false;
+        Connection connection = ManagerDAO.connect();
+        if(connection != null){
+            try{
+                PreparedStatement preparedStatement = connection.prepareStatement(sql_checkSubjectOnCourses);
+                preparedStatement.setInt(1, id);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (!resultSet.next()){
+                    PreparedStatement deleteStatement = connection.prepareStatement(sql_deleteSubject);
+                    deleteStatement.setInt(1, id);
+                    deleteStatement.executeUpdate();
+                    deleted = true;
+                } else {
+                    return false;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally{
+                ManagerDAO.disconnect(connection);
+            }
+        } else {
+            throw new SQLException();
+        }
+        return deleted;
     }
 }

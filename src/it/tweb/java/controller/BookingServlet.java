@@ -42,7 +42,7 @@ public class BookingServlet extends HttpServlet {
             response.setStatus(401);
             return;
         }
-        @Nullable User user  = (User) session.getAttribute("user");
+        User user  = (User) session.getAttribute("user");
         if (user == null) {response.setStatus(401); return;}
 
         @Nullable String subject = request.getParameter("subjectID");
