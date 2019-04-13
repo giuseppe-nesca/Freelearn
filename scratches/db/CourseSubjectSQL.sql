@@ -40,3 +40,5 @@ SELECT * FROM Courses;
 select *
 from courses as c, teachers as t, Subjects as s
 where c.teacherID = t.id AND c.subjectID = s.id and s.name="Algoritmi";
+
+INSERT INTO courses (subjectID, teacherID, isActive) VALUES (?, ?, 1);

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
+import static it.tweb.java.dao.ManagerDAO.registerDriver;
 import static it.tweb.java.utils.ResponseUtils.handleCrossOrigin;
 
 @WebServlet(name = "UserInfoServlet", value = "/userinfo")
@@ -36,5 +37,11 @@ public class UserInfoServlet extends HttpServlet {
         } else {
             response.getWriter().write(gson.toJson(user)); //200, ok
         }
+    }
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        registerDriver();
     }
 }

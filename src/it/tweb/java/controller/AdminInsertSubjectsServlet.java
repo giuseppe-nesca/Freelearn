@@ -56,6 +56,7 @@ public class AdminInsertSubjectsServlet extends HttpServlet {
                     return;
                 } catch (NullPointerException e){
                     response.setStatus(500);
+                    return;
                 }
             }
         }

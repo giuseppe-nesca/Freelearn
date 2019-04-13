@@ -13,6 +13,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import static it.tweb.java.dao.ManagerDAO.registerDriver;
 import static it.tweb.java.utils.ResponseUtils.handleCrossOrigin;
 
 @WebServlet(name = "DeleteLessonServlet", value = "/lessons/delete")
@@ -60,5 +61,11 @@ public class DeleteLessonServlet extends HttpServlet {
             response.setStatus(401);
 
         }
+    }
+
+    @Override
+    public void init() throws ServletException {
+        super.init();
+        registerDriver();
     }
 }

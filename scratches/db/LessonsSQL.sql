@@ -31,10 +31,10 @@ VALUES (4, 2, "2019-03-15", 1, "booked");
 insert into lessons (userID, courseID, date, slot, status)
 VALUES (2, 1, "2019-03-15", 2, "booked");
 
-insert into lessons (userID, courseID, date, slot, status) VALUES (1, 1, "2019-03-16", 1, "booked")
-insert into lessons (userID, courseID, date, slot, status) VALUES (1, 1, "2019-03-17", 1, "booked")
-insert into lessons (userID, courseID, date, slot, status) VALUES (1, 1, "2019-03-20", 1, "booked")
-insert into lessons (userID, courseID, date, slot, status) VALUES (1, 1, "2019-03-23", 1, "booked")
+insert into lessons (userID, courseID, date, slot, status) VALUES (1, 1, "2019-03-16", 1, "booked");
+insert into lessons (userID, courseID, date, slot, status) VALUES (1, 1, "2019-03-17", 1, "booked");
+insert into lessons (userID, courseID, date, slot, status) VALUES (1, 1, "2019-03-20", 1, "booked");
+insert into lessons (userID, courseID, date, slot, status) VALUES (1, 1, "2019-03-23", 1, "booked");
 
 
 INSERT INTO Lessons (userID, courseID, date, slot, status)
@@ -82,3 +82,5 @@ WHERE lessons.id = ? AND lessons.courseID = courses.id AND courses.teacherID = t
 SELECT lessons.id as id, lessons.userID as userID, lessons.courseID as courseID, lessons.date as date, lessons.slot as slot, lessons.status as status, courses.subjectID as subjectID, courses.teacherID as teacherID, subjects.name as subjectName, teachers.surname as teacherSurname, teachers.name as teacherName
 FROM lessons, subjects, teachers, courses
 WHERE lessons.courseID = courses.id AND courses.subjectID = subjects.id AND courses.teacherID = teachers.id;
+
+SELECT id FROM courses WHERE subjectID = ? AND teacherID = ?;
