@@ -66,6 +66,6 @@ public class DeleteLessonServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        registerDriver();
+        registerDriver(getServletContext());
     }
 }

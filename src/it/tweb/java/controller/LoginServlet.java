@@ -26,7 +26,7 @@ public class LoginServlet extends javax.servlet.http.HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        registerDriver();
+        registerDriver(getServletContext());
     }
 
     private void handleLogin(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response) throws javax.servlet.ServletException, IOException {

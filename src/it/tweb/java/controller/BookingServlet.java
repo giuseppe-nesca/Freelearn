@@ -91,6 +91,6 @@ public class BookingServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        ManagerDAO.registerDriver();
+        ManagerDAO.registerDriver(getServletContext());
     }
 }

@@ -67,6 +67,6 @@ public class AdminDeleteTeachersServlet extends HttpServlet {
         @Override
     public void init() throws ServletException {
         super.init();
-        registerDriver();
+        registerDriver(getServletContext());
     }
 }
