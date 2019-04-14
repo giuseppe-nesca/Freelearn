@@ -22,7 +22,6 @@ public class LogoutServlet extends HttpServlet {
     }
 
     private void handleRequest (HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("ciao?");
         handleCrossOrigin(response);
         HttpSession session = request.getSession(false);
         if(session != null) {

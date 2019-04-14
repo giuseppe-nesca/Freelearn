@@ -34,6 +34,7 @@ public class UserInfoServlet extends HttpServlet {
 
         if (session == null || user == null) {
             response.setStatus(401);
+            response.getWriter().write("You are not authorized");
         } else {
             response.getWriter().write(gson.toJson(user)); //200, ok
         }

@@ -37,10 +37,11 @@ public class CoursesServlet extends HttpServlet {
                 response.getWriter().write(gson.toJson(courses));
             } else {
                 response.setStatus(404);
+                response.getWriter().write("There are no courses");
             }
         } catch (SQLException e) {
-            e.getMessage();
             response.setStatus(503);
+            response.getWriter().write("Internal Server Error");
         }
     }
 

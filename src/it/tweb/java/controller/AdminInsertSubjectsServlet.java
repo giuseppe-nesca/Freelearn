@@ -40,27 +40,25 @@ public class AdminInsertSubjectsServlet extends HttpServlet {
                     if (!isActive){
                         boolean result = SubjectDAO.insertSubject(subject);
                         if (result){
-                            response.setStatus(200);
-                            response.getWriter().write("Subject added");
+                            response.getWriter().write("Subject inserted correctly");
                         } else {
                             response.setStatus(400);
-                            response.getWriter().write("Errore mentre inserivo la materia");
+                            response.getWriter().write("An error has occurred, subject not entered");
                         }
                     } else {
                         response.setStatus(400);
                         response.getWriter().write("Subject already exists");
                     }
                     return;
-                } catch (SQLException e) {
+                } catch (SQLException | NullPointerException e) {
                     response.setStatus(503);
-                    return;
-                } catch (NullPointerException e){
-                    response.setStatus(500);
+                    response.getWriter().write("Internal Server Error");
                     return;
                 }
             }
         }
         response.setStatus(401);
+        response.getWriter().write("You are not authorized");
     }
 
     @Override

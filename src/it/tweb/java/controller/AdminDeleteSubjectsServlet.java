@@ -42,26 +42,28 @@ public class AdminDeleteSubjectsServlet extends HttpServlet {
                         if (!isActive) {
                             result = SubjectDAO.deleteSubject(subjectID);
                             if (result) {
-                                response.getWriter().write("Subject correctly deleted!");
+                                response.getWriter().write("Subject deleted correctly");
                                 return;
                             }
                         } else {
-                            response.getWriter().write("Error! Subject is linked to a course!");
+                            response.getWriter().write("Subject is linked to a course");
                             response.setStatus(400);
                             return;
                         }
                     } else {
-                        response.getWriter().write("Error! Subject doesn't exist!");
+                        response.getWriter().write("Subject doesn't exist");
                         response.setStatus(400);
                         return;
                     }
                 } catch (SQLException | NullPointerException e) {
                     response.setStatus(503);
+                    response.getWriter().write("Internal Server Error");
                     return;
                 }
             }
         }
         response.setStatus(401);
+        response.getWriter().write("You are not authorized");
     }
 
     @Override

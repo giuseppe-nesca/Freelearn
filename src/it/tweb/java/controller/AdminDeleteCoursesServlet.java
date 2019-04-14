@@ -43,21 +43,23 @@ public class AdminDeleteCoursesServlet extends HttpServlet {
                         LessonDAO.deleteLessonByCourse(courseID);
                         result = CourseDAO.deleteCourse(courseID);
                         if (result) {
-                            response.getWriter().write("Course correctly deleted!");
+                            response.getWriter().write("Course deleted correctly");
                             return;
                         }
                     } else {
-                        response.getWriter().write("Error! Course doesn't exist!");
+                        response.getWriter().write("Course doesn't exist");
                         response.setStatus(400);
                         return;
                     }
                 } catch (SQLException | NullPointerException e) {
                     response.setStatus(503);
+                    response.getWriter().write("Internal Server Error");
                     return;
                 }
             }
         }
         response.setStatus(401);
+        response.getWriter().write("You are not authorized");
     }
 
     @Override

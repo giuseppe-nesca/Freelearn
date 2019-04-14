@@ -44,13 +44,14 @@ public class UserLessonsServlet extends HttpServlet {
                         return;
                     }
                 } catch (SQLException e) {
-                    e.getMessage();
                     response.setStatus(503);
+                    response.getWriter().write("Internal Server Error");
                     return;
                 }
             }
         }
         response.setStatus(401);
+        response.getWriter().write("You are not authorized");
     }
 
     @Override

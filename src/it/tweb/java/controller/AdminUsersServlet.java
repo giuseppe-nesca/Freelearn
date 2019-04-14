@@ -42,14 +42,15 @@ public class AdminUsersServlet extends HttpServlet {
                         response.getWriter().write(gson.toJson(users));
                         return;
                     }
-                } catch (SQLException e) { 
-                    e.getMessage();
+                } catch (SQLException e) {
                     response.setStatus(503);
+                    response.getWriter().write("Internal Server Error");
                     return;
                 }
             }
         }
         response.setStatus(401);
+        response.getWriter().write("You are not authorized");
     }
 
     @Override

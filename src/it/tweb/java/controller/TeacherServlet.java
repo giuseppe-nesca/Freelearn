@@ -40,15 +40,11 @@ public class TeacherServlet extends HttpServlet {
             int subject = -1;
             try {
                 subject = Integer.parseInt(subjectID);
-            } catch (NumberFormatException e) {
-                response.setStatus(400);
-                return;
-            }
-            try {
                 List<Teacher> teachers =  SubjectDAO.getSubjectTeachersByID(subject);
                 response.getWriter().write(gson.toJson(teachers));
-            } catch (SQLException e) {
+            } catch (SQLException | NumberFormatException e) {
                 response.setStatus(503);
+                response.getWriter().write("Internal Server Error");
             }
         } else {
             try {
@@ -56,6 +52,7 @@ public class TeacherServlet extends HttpServlet {
                 response.getWriter().write(gson.toJson(teachers));
             } catch (SQLException e) {
                 response.setStatus(503);
+                response.getWriter().write("Internal Server Error");
             }
         }
     }

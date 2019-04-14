@@ -40,19 +40,22 @@ public class AdminInsertCoursesServlet extends HttpServlet {
                     int teacherID = Integer.parseInt(tID);
                     result = CourseDAO.insertCourse(subjectID, teacherID);
                     if (result){
-                        response.getWriter().write("Course added!");
+                        response.getWriter().write("Course inserted correctly");
                         return;
                     } else {
                         response.setStatus(400);
+                        response.getWriter().write("Course already exists");
                         return;
                     }
                 } catch (SQLException | NullPointerException e) {
                     response.setStatus(503);
+                    response.getWriter().write("Internal Server Error");
                     return;
                 }
             }
         }
         response.setStatus(401);
+        response.getWriter().write("You are not authorized");
     }
 
     @Override

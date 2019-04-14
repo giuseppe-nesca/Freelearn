@@ -32,35 +32,37 @@ public class DeleteLessonServlet extends HttpServlet {
         int lessonID = Integer.parseInt(lesson);
 
         HttpSession session = request.getSession(false);
-        User user = null;
-        if (session != null)
-            user = (User) session.getAttribute("user");
-        if (session != null && user != null) {
-            try{
-                Lesson l = LessonDAO.getLessonsByLessonID(lessonID);
-                if (l.isCancelled() || l.isDone()){
-                    response.setStatus(400);
-                    response.getWriter().write("Lesson is in the past or it's already deleted");
+        if (session != null){
+            User user = (User) session.getAttribute("user");
+            if (user != null) {
+                try {
+                    Lesson l = LessonDAO.getLessonsByLessonID(lessonID);
+                    if (l.isCancelled() || l.isDone()) {
+                        response.setStatus(400);
+                        response.getWriter().write("Lesson is in the past or it's already deleted");
+                        return;
+                    }
+                } catch (SQLException e) {
+                    response.setStatus(503);
+                    response.getWriter().write("Internal Server Error");
                     return;
                 }
-            } catch (SQLException e) {
-                response.setStatus(500);
-                return;
-            }
 
-            try {
-                boolean success = LessonDAO.delete(lessonID);
-                if (!success){
-                    response.setStatus(400);
-                    response.getWriter().write("Lesson doesn't exist");
+                try {
+                    boolean success = LessonDAO.delete(lessonID);
+                    if (!success) {
+                        response.setStatus(400);
+                        response.getWriter().write("Lesson doesn't exist");
+                    }
+                } catch (SQLException e) {
+                    response.setStatus(503);
+                    response.getWriter().write("Internal Server Error");
+                    return;
                 }
-            } catch (SQLException e) {
-                e.getMessage();
             }
-        } else {
-            response.setStatus(401);
-
         }
+        response.setStatus(401);
+        response.getWriter().write("You are not authorized");
     }
 
     @Override

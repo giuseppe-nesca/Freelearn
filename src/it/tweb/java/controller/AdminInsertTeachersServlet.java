@@ -40,12 +40,11 @@ public class AdminInsertTeachersServlet extends HttpServlet {
                     if (!isActive){
                         boolean result = TeacherDAO.insertTeacher(teacherSurname, teacherName);
                         if (result){
-                            response.setStatus(200);
-                            response.getWriter().write("Teacher added");
+                            response.getWriter().write("Teacher inserted correctly");
                             return;
                         } else {
                             response.setStatus(400);
-                            response.getWriter().write("Errore mentre inserivo il professore");
+                            response.getWriter().write("An error has occurred, teacher not entered");
                             return;
                         }
                     } else {
@@ -55,11 +54,13 @@ public class AdminInsertTeachersServlet extends HttpServlet {
                     return;
                 } catch (SQLException | NullPointerException e) {
                     response.setStatus(503);
+                    response.getWriter().write("Internal Server Error");
                     return;
                 }
             }
         }
         response.setStatus(401);
+        response.getWriter().write("You are not authorized");
     }
 
     @Override
