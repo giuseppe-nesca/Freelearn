@@ -57,13 +57,14 @@ public class BookingServlet extends HttpServlet {
                     boolean userAviable = UserDAO.isAviable(user.getId(), dateString, slot);
 
                     if (!(userAviable && teacherAviable[slot - 1])) {
-                        response.setStatus(400);
                         if (!teacherAviable[slot - 1]){
-                            response.getWriter().write("Teacher is busy in that date/slot");
+                            response.getWriter().write("Teacher is busy in that date/slot\n");
                         }
                         if (!userAviable){
                             response.getWriter().write("You may have another lesson booked in that date/slot");
                         }
+                        response.setStatus(400);
+                        return;
                     } else {
                         boolean result = LessonDAO.book(subjectID, teacherID, user.getId(), dateString, slot);
                         if (!result) {
@@ -72,10 +73,9 @@ public class BookingServlet extends HttpServlet {
                             return;
                         }
                         response.getWriter().write("Successfully booked");
+                        return;
                     }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }  catch (NumberFormatException | NullPointerException e) {
+                }  catch (SQLException | NumberFormatException | NullPointerException e) {
                     response.setStatus(503);
                     response.getWriter().write("Internal Server Error");
                     return;
