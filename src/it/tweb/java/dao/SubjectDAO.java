@@ -24,7 +24,7 @@ public class SubjectDAO {
     private static final String sql_checkSubject = "SELECT isActive FROM subjects WHERE name = ?;";
     private static final String sql_checkSubjectByID = "SELECT isActive FROM subjects WHERE id = ?;";
     private static final String sql_insertSubject = "INSERT INTO subjects (name) VALUE (?);";
-    private static final String sql_checkSubjectOnCourses = "SELECT courses.id FROM courses WHERE courses.subjectID = ?;";
+    private static final String sql_checkSubjectOnCourses = "SELECT courses.isActive FROM courses WHERE courses.subjectID = ?;";
     private static final String sql_deleteSubject = "UPDATE subjects SET isActive = '0' WHERE id = ?;";
 
     static public List<Subject> getLessons() throws SQLException {
@@ -142,22 +142,40 @@ public class SubjectDAO {
         return result;
     }
 
+    static public boolean checkSubjectOnCourses(int id) throws SQLException {
+        boolean isActive = false;
+        Connection connection = ManagerDAO.connect();
+        if (connection != null){
+            try{
+                PreparedStatement preparedStatement = connection.prepareStatement(sql_checkSubjectOnCourses);
+                preparedStatement.setInt(1, id);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while(resultSet.next()){
+                    isActive = resultSet.getBoolean("isActive");
+                    if(isActive){
+                        return true;
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally{
+                ManagerDAO.disconnect(connection);
+            }
+        } else {
+            throw new SQLException();
+        }
+        return isActive;
+    }
+
     static public boolean deleteSubject(int id) throws SQLException {
         boolean deleted = false;
         Connection connection = ManagerDAO.connect();
         if(connection != null){
             try{
-                PreparedStatement preparedStatement = connection.prepareStatement(sql_checkSubjectOnCourses);
-                preparedStatement.setInt(1, id);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                if (!resultSet.next()){
-                    PreparedStatement deleteStatement = connection.prepareStatement(sql_deleteSubject);
-                    deleteStatement.setInt(1, id);
-                    deleteStatement.executeUpdate();
-                    deleted = true;
-                } else {
-                    return false;
-                }
+                PreparedStatement deleteStatement = connection.prepareStatement(sql_deleteSubject);
+                deleteStatement.setInt(1, id);
+                deleteStatement.executeUpdate();
+                deleted = true;
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally{

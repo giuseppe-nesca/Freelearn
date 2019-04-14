@@ -38,12 +38,15 @@ public class AdminDeleteSubjectsServlet extends HttpServlet {
                     @Nullable int subjectID = Integer.parseInt(request.getParameter("subjectID"));
                     exist = SubjectDAO.checkSubjectByID(subjectID);
                     if (exist) {
-                        result = SubjectDAO.deleteSubject(subjectID);
-                        if (result){
-                            response.getWriter().write("Subject correctly deleted!");
-                            return;
+                        boolean isActive = SubjectDAO.checkSubjectOnCourses(subjectID);
+                        if (!isActive) {
+                            result = SubjectDAO.deleteSubject(subjectID);
+                            if (result) {
+                                response.getWriter().write("Subject correctly deleted!");
+                                return;
+                            }
                         } else {
-                            response.getWriter().write("Error! Subject has not been deleted!");
+                            response.getWriter().write("Error! Subject is linked to a course!");
                             response.setStatus(400);
                             return;
                         }

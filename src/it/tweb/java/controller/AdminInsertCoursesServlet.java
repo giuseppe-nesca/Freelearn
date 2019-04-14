@@ -44,7 +44,6 @@ public class AdminInsertCoursesServlet extends HttpServlet {
                         return;
                     } else {
                         response.setStatus(400);
-                        response.getWriter().write("Error, course not added!");
                         return;
                     }
                 } catch (SQLException | NullPointerException e) {

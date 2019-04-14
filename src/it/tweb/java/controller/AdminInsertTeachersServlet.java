@@ -42,9 +42,11 @@ public class AdminInsertTeachersServlet extends HttpServlet {
                         if (result){
                             response.setStatus(200);
                             response.getWriter().write("Teacher added");
+                            return;
                         } else {
                             response.setStatus(400);
                             response.getWriter().write("Errore mentre inserivo il professore");
+                            return;
                         }
                     } else {
                         response.setStatus(400);

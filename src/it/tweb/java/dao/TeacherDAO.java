@@ -11,6 +11,9 @@ public class TeacherDAO {
     private final static String sql_checkTeacher = "SELECT isActive FROM teachers WHERE surname = ? AND name = ?;";
     private final static String sql_insertTeacher = "INSERT INTO teachers (surname, name) VALUE (?, ?);";
     private final static String sql_getAllTeachers = "SELECT * FROM teachers WHERE isActive = true;";
+    private static final String sql_checkTeacherByID = "SELECT isActive FROM teachers WHERE id = ?;";
+    private static final String sql_checkTeacherOnCourses = "SELECT courses.isActive FROM courses WHERE courses.teacherID = ?;";
+    private static final String sql_deleteTeacher = "UPDATE teachers SET isActive = '0' WHERE id = ?;";
 
 
     public static boolean[] isAviable(int teacherID, String date) throws SQLException {
@@ -106,5 +109,71 @@ public class TeacherDAO {
             }
         } else throw new SQLException();
         return teachers;
+    }
+
+    static public boolean checkTeacherOnCourses(int id) throws SQLException {
+        boolean isActive = false;
+        Connection connection = ManagerDAO.connect();
+        if (connection != null){
+            try{
+                PreparedStatement preparedStatement = connection.prepareStatement(sql_checkTeacherOnCourses);
+                preparedStatement.setInt(1, id);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while(resultSet.next()){
+                    isActive = resultSet.getBoolean("isActive");
+                    if(isActive){
+                        return true;
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally{
+                ManagerDAO.disconnect(connection);
+            }
+        } else {
+            throw new SQLException();
+        }
+        return isActive;
+    }
+
+    static public boolean deleteTeacher(int id) throws SQLException {
+        boolean deleted = false;
+        Connection connection = ManagerDAO.connect();
+        if(connection != null){
+            try{
+                PreparedStatement deleteStatement = connection.prepareStatement(sql_deleteTeacher);
+                deleteStatement.setInt(1, id);
+                deleteStatement.executeUpdate();
+                deleted = true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally{
+                ManagerDAO.disconnect(connection);
+            }
+        } else {
+            throw new SQLException();
+        }
+        return deleted;
+    }
+
+    public static boolean checkTeacherByID(int teacherID) throws SQLException {
+        boolean isActive = true;
+        Connection connection = ManagerDAO.connect();
+        if (connection != null){
+            try{
+                PreparedStatement preparedStatement = connection.prepareStatement(sql_checkTeacherByID);
+                preparedStatement.setInt(1, teacherID);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while(resultSet.next()){
+                    if(isActive){
+                        isActive = resultSet.getBoolean("isActive");
+                        return isActive;
+                    }
+                }
+            } finally {
+                ManagerDAO.disconnect(connection);
+            }
+        } else throw new SQLException();
+        return false;
     }
 }

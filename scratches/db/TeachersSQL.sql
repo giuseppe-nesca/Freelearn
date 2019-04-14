@@ -47,3 +47,7 @@ SELECT isActive FROM teachers WHERE surname = ?;
 INSERT INTO teachers (surname, name) VALUE (?, ?);
 
 SELECT * FROM teachers WHERE isActive = true;
+
+SELECT courses.isActive FROM courses WHERE courses.teacherID = ?;
+
+UPDATE teachers SET isActive = '0' WHERE id = ?;
