@@ -86,3 +86,9 @@ WHERE lessons.courseID = courses.id AND courses.subjectID = subjects.id AND cour
 SELECT id FROM courses WHERE subjectID = ? AND teacherID = ?;
 
 SELECT lessons.slot, lessons.status as status FROM lessons, courses WHERE lessons.date = ? AND courses.teacherID = ? AND lessons.courseID = courses.id;
+
+SELECT lessons.id, lessons.status
+FROM lessons, courses
+WHERE lessons.userID = ? AND courses.id = ? AND lessons.courseID = courses.id;
+
+UPDATE lessons SET lessons.status = 'cancelled' WHERE lessons.courseID = ?;

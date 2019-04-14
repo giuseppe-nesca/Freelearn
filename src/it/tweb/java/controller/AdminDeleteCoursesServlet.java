@@ -1,6 +1,7 @@
 package it.tweb.java.controller;
 
 import it.tweb.java.dao.CourseDAO;
+import it.tweb.java.dao.LessonDAO;
 import it.tweb.java.model.Course;
 import it.tweb.java.model.User;
 import org.jetbrains.annotations.Nullable;
@@ -39,6 +40,7 @@ public class AdminDeleteCoursesServlet extends HttpServlet {
                     @Nullable int courseID = Integer.parseInt(request.getParameter("courseID"));
                     isActive = CourseDAO.checkCourseByID(courseID);
                     if (isActive) {
+                        LessonDAO.deleteLessonByCourse(courseID);
                         result = CourseDAO.deleteCourse(courseID);
                         if (result) {
                             response.getWriter().write("Course correctly deleted!");
