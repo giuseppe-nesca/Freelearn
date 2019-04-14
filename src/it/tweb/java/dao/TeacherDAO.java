@@ -157,7 +157,7 @@ public class TeacherDAO {
     }
 
     public static boolean checkTeacherByID(int teacherID) throws SQLException {
-        boolean isActive = true;
+        boolean isActive;
         Connection connection = ManagerDAO.connect();
         if (connection != null){
             try{
@@ -165,8 +165,8 @@ public class TeacherDAO {
                 preparedStatement.setInt(1, teacherID);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 while(resultSet.next()){
+                    isActive = resultSet.getBoolean("isActive");
                     if(isActive){
-                        isActive = resultSet.getBoolean("isActive");
                         return isActive;
                     }
                 }

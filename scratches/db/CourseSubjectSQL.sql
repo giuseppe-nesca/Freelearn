@@ -54,3 +54,7 @@ WHERE c.subjectID = ? AND c.teacherID = ? AND c.subjectID = s.id AND c.teacherID
 SELECT c.id as courseID, t.id as teacherID, s.id as subjectID, t.surname as teacherSurname, t.name as teacherName, s.name as subjectName
 FROM subjects as s, courses as c, teachers as t
 WHERE c.subjectID = s.id AND c.teacherID = t.id;
+
+SELECT isActive FROM courses WHERE id = ?;
+
+UPDATE courses SET isActive = '0' WHERE id = ?;

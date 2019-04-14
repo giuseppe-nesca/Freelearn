@@ -15,9 +15,11 @@ public class CourseDAO {
             "FROM subjects as s, courses as c, teachers as t " +
             "WHERE c.subjectID = ? AND c.teacherID = ? AND c.subjectID = s.id AND c.teacherID = t.id;";
     private static String sql_getAllCourses =
-            "SELECT c.id as courseID, t.id as teacherID, s.id as subjectID, t.surname as teacherSurname, t.name as teacherName, s.name as subjectName " +
+            "SELECT c.id as courseID, t.id as teacherID, s.id as subjectID, t.surname as teacherSurname, t.name as teacherName, s.name as subjectName, c.isActive as isActive " +
             "FROM subjects as s, courses as c, teachers as t " +
             "WHERE c.subjectID = s.id AND c.teacherID = t.id;";
+    private static final String sql_checkCourseByID = "SELECT isActive FROM courses WHERE id = ?;";
+    private static final String sql_deleteCourse = "UPDATE courses SET isActive = '0' WHERE id = ?;";
 
     public static boolean checkCourse(int subjectID, int teacherID) throws SQLException {
         boolean result;
@@ -32,6 +34,27 @@ public class CourseDAO {
                     result = resultSet.getBoolean("isActive");
                     if (result){
                         return true;
+                    }
+                }
+            } finally {
+                ManagerDAO.disconnect(connection);
+            }
+        } else throw new SQLException();
+        return false;
+    }
+
+    public static boolean checkCourseByID(int courseID) throws SQLException {
+        boolean isActive;
+        Connection connection = ManagerDAO.connect();
+        if (connection != null){
+            try{
+                PreparedStatement preparedStatement = connection.prepareStatement(sql_checkCourseByID);
+                preparedStatement.setInt(1, courseID);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while(resultSet.next()){
+                    isActive = resultSet.getBoolean("isActive");
+                    if(isActive){
+                        return isActive;
                     }
                 }
             } finally {
@@ -96,14 +119,17 @@ public class CourseDAO {
             try{
                 PreparedStatement preparedStatement = connection.prepareStatement(sql_getAllCourses);
                 ResultSet resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()){
+                while (resultSet.next()) {
                     int coursesID = resultSet.getInt("courseID");
                     int teacherID = resultSet.getInt("teacherID");
                     String teacherSurname = resultSet.getString("teacherSurname");
                     String teacherName = resultSet.getString("teacherName");
                     int subjectID = resultSet.getInt("subjectID");
                     String subjectName = resultSet.getString("subjectName");
-                    courses.add(new Course(coursesID, teacherID, teacherName, teacherSurname, subjectID, subjectName));
+                    boolean isActive = resultSet.getBoolean("isActive");
+                    if (isActive) {
+                        courses.add(new Course(coursesID, teacherID, teacherName, teacherSurname, subjectID, subjectName));
+                    }
                 }
             } catch (SQLException e) {
                 e.getMessage();
@@ -112,5 +138,25 @@ public class CourseDAO {
             }
         } else throw new SQLException();
         return courses;
+    }
+
+    static public boolean deleteCourse(int id) throws SQLException {
+        boolean deleted = false;
+        Connection connection = ManagerDAO.connect();
+        if(connection != null){
+            try{
+                PreparedStatement deleteStatement = connection.prepareStatement(sql_deleteCourse);
+                deleteStatement.setInt(1, id);
+                deleteStatement.executeUpdate();
+                deleted = true;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally{
+                ManagerDAO.disconnect(connection);
+            }
+        } else {
+            throw new SQLException();
+        }
+        return deleted;
     }
 }

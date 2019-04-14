@@ -100,7 +100,7 @@ public class SubjectDAO {
     }
 
     public static boolean checkSubjectByID(int subjectID) throws SQLException {
-        boolean isActive = true;
+        boolean isActive;
         Connection connection = ManagerDAO.connect();
         if (connection != null){
             try{
@@ -108,8 +108,8 @@ public class SubjectDAO {
                 preparedStatement.setInt(1, subjectID);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 while(resultSet.next()){
+                    isActive = resultSet.getBoolean("isActive");
                     if(isActive){
-                        isActive = resultSet.getBoolean("isActive");
                         return isActive;
                     }
                 }
