@@ -55,10 +55,6 @@ create table lessons
   date     date                         not null,
   slot     int                          not null,
   status   enum ('booked', 'cancelled') not null,
-  constraint courseID
-    unique (courseID, date, slot),
-  constraint userID
-    unique (userID, date, slot),
   constraint lessons_ibfk_1
     foreign key (userID) references users (id)
       on delete cascade,
