@@ -53,6 +53,9 @@ public class DeleteLessonServlet extends HttpServlet {
                     if (!success) {
                         response.setStatus(400);
                         response.getWriter().write("Lesson doesn't exist");
+                    } else {
+                        response.getWriter().write("Lesson deleted correctly");
+                        return;
                     }
                 } catch (SQLException e) {
                     response.setStatus(503);

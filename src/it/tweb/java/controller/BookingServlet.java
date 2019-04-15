@@ -72,6 +72,7 @@ public class BookingServlet extends HttpServlet {
                             response.getWriter().write("You may have another lesson booked in that date/slot");
                             return;
                         }
+                        response.setStatus(200);
                         response.getWriter().write("Successfully booked");
                         return;
                     }
