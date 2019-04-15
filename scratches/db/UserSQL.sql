@@ -62,3 +62,5 @@ SELECT * FROM Users, lessons WHERE users.id = 1 AND lessons.date = "2019-02-12" 
 SELECT id, name, surname FROM users;
 
 SELECT * FROM Users, lessons WHERE users.id = ? AND lessons.date = ? AND lessons.slot = ? AND lessons.status = 'booked' AND users.id = lessons.userID;
+
+SELECT role FROM users WHERE id = ?;
