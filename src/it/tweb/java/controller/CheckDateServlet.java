@@ -37,6 +37,7 @@ public class CheckDateServlet extends HttpServlet {
                 response.getWriter().write(gson.toJson(result));
             } catch (SQLException e) {
                 response.setStatus(503);
+                response.getWriter().write("Internal Server Error");
             }
         } else {
             response.setStatus(400);

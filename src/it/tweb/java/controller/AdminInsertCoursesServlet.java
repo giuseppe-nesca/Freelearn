@@ -1,10 +1,8 @@
 package it.tweb.java.controller;
 
-import com.google.gson.Gson;
-import it.tweb.java.dao.LessonDAO;
-import it.tweb.java.dao.ManagerDAO;
-import it.tweb.java.model.Lesson;
+import it.tweb.java.dao.CourseDAO;
 import it.tweb.java.model.User;
+import org.jetbrains.annotations.Nullable;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,14 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 
+import static it.tweb.java.dao.ManagerDAO.registerDriver;
 import static it.tweb.java.utils.ResponseUtils.handleCrossOrigin;
 
-@WebServlet(name = "AdminLessonsServlet", value = "/admin/lessons")
-public class AdminLessonsServlet extends HttpServlet {
-    private Gson gson = new Gson();
-
+@WebServlet(name = "AdminInsertCoursesServlet", value="/admin/course/insert")
+public class AdminInsertCoursesServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         handleRequest(request, response);
     }
@@ -32,18 +28,26 @@ public class AdminLessonsServlet extends HttpServlet {
 
     private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         handleCrossOrigin(response);
-
+        boolean result;
         HttpSession session = request.getSession(false);
         if (session != null){
             User user = (User) session.getAttribute("user");
             if (user != null && user.getRole().equals("admin")){
-                try{
-                    List<Lesson> lessons = LessonDAO.getLessonsAll();
-                    if (lessons != null){
-                        response.getWriter().write(gson.toJson(lessons));
+                try {
+                    @Nullable String sID = request.getParameter("subjectID");
+                    int subjectID = Integer.parseInt(sID);
+                    @Nullable String tID = request.getParameter("teacherID");
+                    int teacherID = Integer.parseInt(tID);
+                    result = CourseDAO.insertCourse(subjectID, teacherID);
+                    if (result){
+                        response.getWriter().write("Course inserted correctly");
+                        return;
+                    } else {
+                        response.setStatus(400);
+                        response.getWriter().write("Course already exists");
                         return;
                     }
-                } catch (SQLException e) {
+                } catch (SQLException | NullPointerException e) {
                     response.setStatus(503);
                     response.getWriter().write("Internal Server Error");
                     return;
@@ -57,6 +61,6 @@ public class AdminLessonsServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        ManagerDAO.registerDriver();
+        registerDriver();
     }
 }

@@ -34,10 +34,12 @@ public class SubjectServlet extends HttpServlet {
             if (subjects != null) {
                 response.getWriter().write(gson.toJson(subjects));
             } else {
-                response.setStatus(404);
+                response.setStatus(400);
+                response.getWriter().write("There are no subjects");
             }
         } catch (SQLException e) {
             response.setStatus(503);
+            response.getWriter().write("Internal Server Error");
         }
     }
 

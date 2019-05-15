@@ -35,60 +35,60 @@ public class BookingServlet extends HttpServlet {
 
     private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         handleCrossOrigin(response);
-        PrintWriter pw = response.getWriter();
 
         HttpSession session = request.getSession(false);
-        if (session == null ){
-            response.setStatus(401);
-            return;
-        }
-        @Nullable User user  = (User) session.getAttribute("user");
-        if (user == null) {response.setStatus(401); return;}
+        if (session != null) {
+            User user = (User) session.getAttribute("user");
+            if (user != null) {
+                try {
+                    @Nullable String subject = request.getParameter("subjectID");
+                    @Nullable String teacher = request.getParameter("teacherID");
+                    @Nullable String dateString = request.getParameter("date");
+                    @Nullable String slotParam = request.getParameter("slot");
+                    int subjectID, teacherID, slot;
+                    Date date;
+                    subjectID = Integer.parseInt(subject);
+                    teacherID = Integer.parseInt(teacher);
+                    slot = Integer.parseInt(slotParam);
+                    if (dateString == null) throw new NullPointerException();
+                    date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
 
-        @Nullable String subject = request.getParameter("subjectID");
-        @Nullable String teacher = request.getParameter("teacherID");
-        @Nullable String dateString = request.getParameter("date");
-        @Nullable String slotParam = request.getParameter("slot");
-        int subjectID, teacherID, slot;
-        Date date;
-        try {
-            subjectID = Integer.parseInt(subject);
-            teacherID = Integer.parseInt(teacher);
-            slot = Integer.parseInt(slotParam);
-            if (dateString == null) throw new NullPointerException();
-            date = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
-        } catch( NumberFormatException e) {
-            response.setStatus(400);
-            return;
-        } catch (NullPointerException e) {
-            response.setStatus(400);
-            return;
-        } catch (ParseException e) {
-            response.setStatus(400);
-            System.err.println("bad input data format");
-            return;
-        }
-        try {
-            boolean[] teacherAviable = TeacherDAO.isAviable(teacherID, dateString);
-            boolean userAviable = UserDAO.isAviable(user.getId(), dateString, slot);
-            if (!(userAviable && teacherAviable[slot -1])) {
-                response.setStatus(403);
-                if (!teacherAviable[slot -1])
-                    pw.write("Teacher busy in that date/slot");
-                if (!userAviable)
-                    pw.write("You may have another lesson booked in that date/slot");
-            } else {
-                boolean result = LessonDAO.book(subjectID, teacherID, user.getId(), dateString, slot);
-                if (!result) {
+                    boolean[] teacherAviable = TeacherDAO.isAviable(teacherID, dateString);
+                    boolean userAviable = UserDAO.isAviable(user.getId(), dateString, slot);
+
+                    if (!(userAviable && teacherAviable[slot - 1])) {
+                        if (!teacherAviable[slot - 1]){
+                            response.getWriter().write("Teacher is busy in that date/slot\n");
+                        }
+                        if (!userAviable){
+                            response.getWriter().write("You may have another lesson booked in that date/slot");
+                        }
+                        response.setStatus(400);
+                        return;
+                    } else {
+                        boolean result = LessonDAO.book(subjectID, teacherID, user.getId(), dateString, slot);
+                        if (!result) {
+                            response.setStatus(400);
+                            response.getWriter().write("You may have another lesson booked in that date/slot");
+                            return;
+                        }
+                        response.setStatus(200);
+                        response.getWriter().write("Successfully booked");
+                        return;
+                    }
+                }  catch (SQLException | NumberFormatException | NullPointerException e) {
+                    response.setStatus(503);
+                    response.getWriter().write("Internal Server Error");
+                    return;
+                } catch (ParseException e) {
                     response.setStatus(400);
-                    pw.write("You may have another lesson booked in that date/slot");
+                    System.err.println("Bad input data format");
                     return;
                 }
-                response.getWriter().write("Successfuly booked");
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
+        response.setStatus(401);
+        response.getWriter().write("You are not authorized");
     }
 
     @Override

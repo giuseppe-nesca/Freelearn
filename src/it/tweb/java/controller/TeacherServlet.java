@@ -3,6 +3,7 @@ package it.tweb.java.controller;
 import com.google.gson.Gson;
 import it.tweb.java.dao.ManagerDAO;
 import it.tweb.java.dao.SubjectDAO;
+import it.tweb.java.dao.TeacherDAO;
 import it.tweb.java.model.Teacher;
 
 import javax.servlet.ServletException;
@@ -27,18 +28,11 @@ public class TeacherServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//        response.setStatus(401);
         handleRequest(request, response);
     }
 
     private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         handleCrossOrigin(response);
-
-/*        HttpSession session = request.getSession(false);
-        if (session == null) {
-            response.setStatus(401);
-            return;
-        }*/
 
         String subjectID = request.getParameter("subjectID");
 
@@ -46,20 +40,21 @@ public class TeacherServlet extends HttpServlet {
             int subject = -1;
             try {
                 subject = Integer.parseInt(subjectID);
-            } catch (NumberFormatException e) {
-                response.setStatus(400);
-                return;
-            }
-            try {
                 List<Teacher> teachers =  SubjectDAO.getSubjectTeachersByID(subject);
                 response.getWriter().write(gson.toJson(teachers));
-                return;
+            } catch (SQLException | NumberFormatException e) {
+                response.setStatus(503);
+                response.getWriter().write("Internal Server Error");
+            }
+        } else {
+            try {
+                List<Teacher> teachers = TeacherDAO.getAllTeachers();
+                response.getWriter().write(gson.toJson(teachers));
             } catch (SQLException e) {
                 response.setStatus(503);
-                return;
+                response.getWriter().write("Internal Server Error");
             }
         }
-        response.setStatus(400);
     }
 
     @Override

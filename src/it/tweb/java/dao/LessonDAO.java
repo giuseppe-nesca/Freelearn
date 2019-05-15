@@ -36,6 +36,8 @@ public class LessonDAO {
             "FROM lessons, subjects, teachers, courses " +
             "WHERE lessons.courseID = courses.id AND courses.subjectID = subjects.id AND courses.teacherID = teachers.id;";
 
+    private static String sql_deleteLessonByCourse = "UPDATE lessons SET lessons.status = 'cancelled' WHERE lessons.courseID = ?;";
+
     private static Lesson resultSetToLesson(ResultSet rs) throws SQLException {
         int id = rs.getInt("id");
         int userID = rs.getInt("userID");
@@ -148,11 +150,26 @@ public class LessonDAO {
                     lessons.add(resultSetToLesson(resultSet));
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                e.getMessage();
             } finally {
                 ManagerDAO.disconnect(connection);
             }
         } else throw new SQLException();
         return lessons;
+    }
+
+    public static void deleteLessonByCourse(int id) throws SQLException{
+        Connection connection = ManagerDAO.connect();
+        if (connection != null){
+            try{
+                PreparedStatement preparedStatement = connection.prepareStatement(sql_deleteLessonByCourse);
+                preparedStatement.setInt(1, id);
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                e.getMessage();
+            } finally {
+                ManagerDAO.disconnect(connection);
+            }
+        } else throw new SQLException();
     }
 }

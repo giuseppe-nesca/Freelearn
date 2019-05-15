@@ -1,8 +1,8 @@
 package it.tweb.java.controller;
 
-import it.tweb.java.dao.LessonDAO;
-import it.tweb.java.model.Lesson;
+import it.tweb.java.dao.TeacherDAO;
 import it.tweb.java.model.User;
+import org.jetbrains.annotations.Nullable;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,8 +16,8 @@ import java.sql.SQLException;
 import static it.tweb.java.dao.ManagerDAO.registerDriver;
 import static it.tweb.java.utils.ResponseUtils.handleCrossOrigin;
 
-@WebServlet(name = "DeleteLessonServlet", value = "/lessons/delete")
-public class DeleteLessonServlet extends HttpServlet {
+@WebServlet(name = "AdminInsertTeachersServlet", value = "/admin/teacher/insert")
+public class AdminInsertTeachersServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         handleRequest(request, response);
     }
@@ -26,39 +26,33 @@ public class DeleteLessonServlet extends HttpServlet {
         handleRequest(request, response);
     }
 
-    private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         handleCrossOrigin(response);
-        String lesson = request.getParameter("lessonID");
-        int lessonID = Integer.parseInt(lesson);
 
         HttpSession session = request.getSession(false);
         if (session != null){
             User user = (User) session.getAttribute("user");
-            if (user != null) {
-                try {
-                    Lesson l = LessonDAO.getLessonsByLessonID(lessonID);
-                    if (l.isCancelled() || l.isDone()) {
-                        response.setStatus(400);
-                        response.getWriter().write("Lesson is in the past or it's already deleted");
-                        return;
-                    }
-                } catch (SQLException e) {
-                    response.setStatus(503);
-                    response.getWriter().write("Internal Server Error");
-                    return;
-                }
-
-                try {
-                    boolean success = LessonDAO.delete(lessonID);
-                    if (!success) {
-                        response.setStatus(400);
-                        response.getWriter().write("Lesson doesn't exist");
+            if (user != null && user.getRole().equals("admin")){
+                try{
+                    @Nullable String teacherSurname = request.getParameter("teacherSurname");
+                    @Nullable String teacherName = request.getParameter("teacherName");
+                    boolean isActive = TeacherDAO.checkTeacher(teacherSurname, teacherName);
+                    if (!isActive){
+                        boolean result = TeacherDAO.insertTeacher(teacherSurname, teacherName);
+                        if (result){
+                            response.getWriter().write("Teacher inserted correctly");
+                            return;
+                        } else {
+                            response.setStatus(400);
+                            response.getWriter().write("An error has occurred, teacher not entered");
+                            return;
+                        }
                     } else {
-                        response.setStatus(200);
-                        response.getWriter().write("Lesson deleted correctly");
-                        return;
+                        response.setStatus(400);
+                        response.getWriter().write("Teacher already exists");
                     }
-                } catch (SQLException e) {
+                    return;
+                } catch (SQLException | NullPointerException e) {
                     response.setStatus(503);
                     response.getWriter().write("Internal Server Error");
                     return;

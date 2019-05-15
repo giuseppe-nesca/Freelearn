@@ -3,13 +3,14 @@ package it.tweb.java.dao;
 import it.tweb.java.model.User;
 import org.jetbrains.annotations.*;
 
+import javax.servlet.ServletException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserDAO {
     private static final String sql_selectUserOnLogin = "SELECT * FROM Users WHERE email=? AND password=PASSWORD(?);";
-    private static final String sql_isAviable = " SELECT * FROM Users, lessons WHERE users.id = ? AND lessons.date = ? AND lessons.slot = ? AND users.id = lessons.userID; ";
+    private static final String sql_isAviable = "SELECT * FROM Users, lessons WHERE users.id = ? AND lessons.date = ? AND lessons.slot = ? AND lessons.status = 'booked' AND users.id = lessons.userID;";
     private static final String sql_getUsersAll = "SELECT id, name, surname FROM users;";
 
     @NotNull

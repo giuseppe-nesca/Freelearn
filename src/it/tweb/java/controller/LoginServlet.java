@@ -51,9 +51,11 @@ public class LoginServlet extends javax.servlet.http.HttpServlet {
                 }
             } catch (SQLException e) {
                 response.setStatus(503);
+                response.getWriter().write("Internal Server Error");
                 return;
             }
         }
         response.setStatus(401);
+        response.getWriter().write("You are not authorized");
     }
 }
